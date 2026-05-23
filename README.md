@@ -1,10 +1,12 @@
 # ferm-claude-skills
 
-Reusable Claude Code skills for **building reliable multi-agent LangGraph pipelines**.
+Reusable Claude Code skills extracted from real FERM Consulting projects.
+Two families:
 
-Three skills that compose into a complete defensive pattern for any agent system
-that has a Validator/Critic node, multi-step tool calls, and an LLM-generated
-final answer:
+## 1. Reliable multi-agent LangGraph pipelines
+
+For any agent system with a Validator/Critic node, multi-step tool calls, and an
+LLM-generated final answer:
 
 | Skill | What it prevents |
 |---|---|
@@ -14,6 +16,15 @@ final answer:
 
 These three compose: evidence → specific feedback → loops broken → guard ensures no hallucination ships if the pipeline still fails.
 
+## 2. Production deployment on a shared Linux server
+
+For deploying Dockerized apps behind Nginx Proxy Manager (the FERM Hetzner/Ubuntu box):
+
+| Skill | What it covers |
+|---|---|
+| **deploy-docker-behind-npm** | Full recipe: Docker network connectivity, internal-vs-host port trap, NPM proxy host + Let's Encrypt SSL, private-repo cloning, recovering data/env from a running container, the 502/400/404 gotcha catalogue |
+| **nginx-sse-and-subpath-gotchas** | SSE/EventSource streaming through nginx (`proxy_buffering off`), subpath base-href/relative-URL fixes, subdomain-vs-subpath decision, browser-cache traps |
+
 ## Install (per machine, once)
 
 ```bash
@@ -21,9 +32,10 @@ git clone https://github.com/ogarciab/ferm-claude-skills ~/.claude/skills-ferm
 
 # Symlink each skill into the active skills directory
 mkdir -p ~/.claude/skills
-ln -s ~/.claude/skills-ferm/langgraph-output-guard            ~/.claude/skills/
-ln -s ~/.claude/skills-ferm/langgraph-validator-with-evidence ~/.claude/skills/
-ln -s ~/.claude/skills-ferm/langgraph-loop-prevention         ~/.claude/skills/
+for s in langgraph-output-guard langgraph-validator-with-evidence langgraph-loop-prevention \
+         deploy-docker-behind-npm nginx-sse-and-subpath-gotchas; do
+  ln -sf ~/.claude/skills-ferm/$s ~/.claude/skills/$s
+done
 ```
 
 After this, **any project you open with Claude Code on this machine** has access to all three skills. They activate automatically when the description matches the task you're describing.
